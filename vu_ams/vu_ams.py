@@ -19,9 +19,12 @@ along with OpenSesame.  If not, see <http://www.gnu.org/licenses/>.
 
 from libopensesame.item import item
 from libqtopensesame.items.qtautoplugin import qtautoplugin
-from openexp.canvas import canvas
 
-class auto_example(item):
+from libopensesame.exceptions import osexception
+import os
+
+
+class vu_ams(item):
 
 	"""
 	This class (the class with the same name as the module) handles the basic
@@ -29,7 +32,7 @@ class auto_example(item):
 	"""
 
 	# Provide an informative description for your plug-in.
-	description = u'An example new-style plug-in'
+	description = u'Connect to VU-AMS device and send marker'
 
 	def reset(self):
 
@@ -42,14 +45,10 @@ class auto_example(item):
 		# in info.json. If you do not provide default values, the plug-in will
 		# work, but the variables will be undefined when they are not explicitly
 		# set in the GUI.
-		self._checkbox = u'yes' # yes = checked, no = unchecked
-		self._color = u'white'
-		self._option = u'Option 1'
-		self._file = u''
-		self._text = u'Default text'
-		self._spinbox_value = 1
-		self._slider_value = 1
-		self._script = u'print 10'
+		self._device_name = u'autodetect'
+		self._send_marker = 1
+		
+		self._vuams = None
 
 	def prepare(self):
 
@@ -57,19 +56,81 @@ class auto_example(item):
 
 		# Call the parent constructor.
 		item.prepare(self)
-		# Here simply prepare a canvas with a fixatio dot.
-		self.c = canvas(self.experiment)
-		self.c.fixdot()
 
+		# Load dll to communicate with VU-AMS device
+		try:
+			from ctypes import windll
+			self.AMS = windll.amsserial # requires AmsSerial.dll !!!
+		except:
+			raise osexception( \
+				"AmsSerial.dll not found. Download (and install) from www.vu-ams.nl >  support  >  downloads  >  extra  >  Download AMS serial DLL setup version 1.3.5 ")
+		
+		# If a device has been specified, use it
+		if self._device_name not in (None, "", "autodetect"):
+			self._vuams = self._device_name
+			try:
+				self.AMS.Connect(str(self._vuams), "AMS5fs")
+			except Exception as e:
+				raise osexception( "Failed to open device port '%s' : '%s'" % (self._vuams, e))
+
+		else:
+			# Else determine the common name of the serial devices on the
+			# platform and find the first accessible device. On Windows,
+			# devices are labeled COM[X], on Linux there are labeled /dev/tty[X]
+			if os.name == "nt":
+				for i in range(255):
+					try:
+						dev = "COM%d" % (i+1) #as COM ports start from 1 on Windows
+						self.AMS.Connect(str(dev), "AMS5fs")
+						if(self.AMS.GetSerial()>0):
+							self._vuams = dev
+							break
+						self.AMS.Disconnect()
+					except Exception as e:
+						self._vuams = None
+						pass
+
+			elif os.name == "posix":
+				raise osexception( \
+					"Sorry: the vu-ams plug-in is Windows only.")
+			else:
+				raise osexception( \
+					"vu-ams plug-in does not know how to auto-detect the VU-AMS on your platform. Please specify a device.")
+
+		if self._vuams == None:
+			raise osexception( \
+				"vu-ams plug-in failed to auto-detect a VU-AMS. Please specify a device.")
+		
+		self.experiment.cleanup_functions.append(self.close)
+
+
+		
 	def run(self):
 
 		"""The run phase of the plug-in goes here."""
+		
+		# takes about 18 milliseconds for AMSi RS232 and 32ms for AMSi USB version
+		try:
+			self.AMS.SendCodedMarker(self._send_marker)
+		except:
+			print '### Failed to send codedmarker!'
+			
+	def close(self):
 
-		# self.set_item_onset() sets the time_[item name] variable. Optionally,
-		# you can pass a timestamp, such as returned by canvas.show().
-		self.set_item_onset(self.c.show())			
+		"""Neatly close the connection to the VU-AMS"""
+		
+		if self._vuams == None:
+				print "no active vuams"
+				return
+		try:
+			self.AMS.Disconnect()
+			print "vuams closed"
+		except:
+			print "failed to close vuams"
 
-class qtauto_example(auto_example, qtautoplugin):
+
+
+class qtvu_ams(vu_ams, qtautoplugin):
 	
 	"""
 	This class handles the GUI aspect of the plug-in. By using qtautoplugin, we
@@ -91,7 +152,7 @@ class qtauto_example(auto_example, qtautoplugin):
 
 		# We don't need to do anything here, except call the parent
 		# constructors.
-		auto_example.__init__(self, name, experiment, script)
+		vu_ams.__init__(self, name, experiment, script)
 		qtautoplugin.__init__(self, __file__)
 
 	def init_edit_widget(self):
@@ -112,7 +173,7 @@ class qtauto_example(auto_example, qtautoplugin):
 		# QLineEdit. Here we connect the stateChanged signal of the QCheckBox,
 		# to the setEnabled() slot of the QLineEdit. This has the effect of
 		# disabling the QLineEdit when the QCheckBox is uncheckhed.
-		self.checkbox_widget.stateChanged.connect( \
-			self.line_edit_widget.setEnabled)
+		#self.checkbox_widget.stateChanged.connect( \
+		#	self.line_edit_widget.setEnabled)
 
 
