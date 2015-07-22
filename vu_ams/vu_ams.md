@@ -1,6 +1,6 @@
 # vu_ams items
 
-`vu_ams` items allow you to send event markers to a VU-AMS device (www.vu-ams.nl).
+`vu_ams` items allow you to send event markers to a VU-AMS device (<http://www.vu-ams.nl>).
 
 ## Options
 
