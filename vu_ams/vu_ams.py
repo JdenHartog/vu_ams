@@ -101,6 +101,11 @@ class vu_ams(item):
 			raise osexception( \
 				"vu-ams plug-in failed to auto-detect a VU-AMS. Please specify a device.")
 		
+		# Check if VU-AMS device is recording
+		if(self.AMS.IsRecording()!=1):
+			raise osexception("VU-AMS is not recording!")
+		
+		
 		self.experiment.cleanup_functions.append(self.close)
 
 
