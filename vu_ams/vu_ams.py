@@ -73,6 +73,10 @@ class vu_ams(item):
 			except Exception as e:
 				raise osexception( "Failed to open device port '%s' : '%s'" % (self._vuams, e))
 
+			# Try to get VU-AMS Serial to check is a VU-AMS device is connected
+			if(self.AMS.GetSerial()<=0):
+				raise osexception( "Failed to connect to device on port '%s'" % (self._vuams))
+
 		else:
 			# Else determine the common name of the serial devices on the
 			# platform and find the first accessible device. On Windows,
@@ -82,6 +86,7 @@ class vu_ams(item):
 					try:
 						dev = "COM%d" % (i+1) #as COM ports start from 1 on Windows
 						self.AMS.Connect(str(dev), "AMS5fs")
+						# Try to get VU-AMS Serial to check is a VU-AMS device is connected
 						if(self.AMS.GetSerial()>0):
 							self._vuams = dev
 							break
