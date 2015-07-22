@@ -1,5 +1,5 @@
 description: VU-AMS plug-in.
-version: 0.1
+version: <use version at the end of this file>
 author: "Jarik den Hartog"
 url: "www.vu-ams.nl"
 category: "Miscellaneous"
@@ -23,4 +23,13 @@ controls:
     tooltip: "Value between 0 and 65535 to be send"
 -
     type: "text"
+    label: ""
+-
+    type: "text"
     label: "Make sure to close the VU-DAMS suite device configuration window as the VU-AMS device can 'talk' to one application at a time."
+-
+    type: "text"
+    label: ""
+-
+    type: "text"
+    label: "VU-AMS OpenSesame Plug-in 1.0 by Jarik den Hartog"
