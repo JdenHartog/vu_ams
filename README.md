@@ -10,6 +10,11 @@ Please see http://osdoc.cogsci.nl/plug-ins/installation for more information on 
 
 The vu_ams plug-in sends event markers from OpenSesame to the VU-AMS device (www.vu-ams.nl) to mark events in the VU-AMS data. These events can be used for analyzing the VU-AMS data. For example by automatically creating labels based upon the event markers send by OpenSesame.
 
+# Dependencies
+
+The vu_ams plug-in uses the AmsSerial.dll to communicate to the VU-AMS device. Therefore it will only work on Windows.
+The AmsSerial.dll should be installed with the latest version of VU-DAMS (www.vu-ams.nl) that you will need to install to configure the VU-AMS device anyway. You can also find a dedicated AmsSerial.dll installer at www.vu-ams.nl/support/downloads/extras
+
 # More
 
 Please see [vu_ams.md](vu_ams/vu_ams.md) for more information
