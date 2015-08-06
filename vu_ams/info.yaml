@@ -12,14 +12,10 @@ controls:
     name: "line_edit_widget"
     tooltip: "For example 'COM3' on Windows"
 -
-    type: "spinbox"
+    type: "line_edit"
     var: "_send_marker"
     label: "Send marker"
-    min_val: 0
-    max_val: 65535
     name: "spinbox_widget"
-    prefix: ""
-    suffix: ""
     tooltip: "Value between 0 and 65535 to be send"
 -
     type: "text"
@@ -32,4 +28,4 @@ controls:
     label: ""
 -
     type: "text"
-    label: "VU-AMS OpenSesame Plug-in 1.0 by Jarik den Hartog"
+    label: "VU-AMS OpenSesame plug-in v1.1 by Jarik den Hartog"

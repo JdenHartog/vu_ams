@@ -6,5 +6,5 @@
 
 You can specify a number of options:
 
-- *Device name* "COM3" for example ("autodetect" by default)
-- *Send marker* The marker number to send. Value between 0 and 65535.
+- *Device name* "COM3" for example ("autodetect" by default).
+- *Send marker* The marker number to send. Value between 0 and 65535. Also a variable like "[AMSmarker]" can be used.

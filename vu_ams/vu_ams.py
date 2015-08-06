@@ -110,7 +110,15 @@ class vu_ams(item):
 		if(self.AMS.IsRecording()!=1):
 			raise osexception("VU-AMS is not recording!")
 		
-		
+		# Check if marker is numerical
+		try:
+			int(self.get('_send_marker'))
+		except Exception as e:
+			raise osexception("Number")
+		# Check if marker is bigger then 65535
+		if(self.get('_send_marker')>65535):
+			raise osexception("Markers can not be bigger then 65535")
+	
 		self.experiment.cleanup_functions.append(self.close)
 
 
@@ -121,7 +129,7 @@ class vu_ams(item):
 		
 		# takes about 18 milliseconds for AMSi RS232 and 32ms for AMSi USB version
 		try:
-			self.AMS.SendCodedMarker(self._send_marker)
+			self.AMS.SendCodedMarker(self.get('_send_marker'))
 		except:
 			print '### Failed to send codedmarker!'
 			
