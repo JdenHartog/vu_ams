@@ -1,5 +1,5 @@
 # vu_ams
-vu-ams plug-in for the smathot/OpenSesame project
+vu-ams plug-in for the [smathot/OpenSesame](https://github.com/smathot/OpenSesame) project
 
 # Install
 
