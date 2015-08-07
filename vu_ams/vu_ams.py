@@ -21,6 +21,7 @@ from libopensesame.item import item
 from libqtopensesame.items.qtautoplugin import qtautoplugin
 
 from libopensesame.exceptions import osexception
+from libopensesame import debug
 import os
 
 
@@ -61,31 +62,34 @@ class vu_ams(item):
 		try:
 			from ctypes import windll
 			self.AMS = windll.amsserial # requires AmsSerial.dll !!!
+			debug.msg(u'Loaded AmsSerial.dll')
 		except:
 			raise osexception( \
-				"AmsSerial.dll not found. Download (and install) from www.vu-ams.nl >  support  >  downloads  >  extra  >  Download AMS serial DLL setup version 1.3.5 ")
+				u'AmsSerial.dll not found. Download (and install) from www.vu-ams.nl >  support  >  downloads  >  extra  >  Download AMS serial DLL setup version 1.3.5 ')
 		
 		# If a device has been specified, use it
-		if self._device_name not in (None, "", "autodetect"):
+		if self._device_name not in (None, '', u'autodetect'):
 			self._vuams = self._device_name
 			try:
-				self.AMS.Connect(str(self._vuams), "AMS5fs")
+				self.AMS.Connect(str(self._vuams), 'AMS5fs') #NOTE: device type can't be u'unicode'
+				debug.msg(u'Trying to connect to VU-AMS device')
 			except Exception as e:
-				raise osexception( "Failed to open device port '%s' : '%s'" % (self._vuams, e))
+				raise osexception( u'Failed to open device port "%s" : "%s"' % (self._vuams, e))
 
 			# Try to get VU-AMS Serial to check is a VU-AMS device is connected
 			if(self.AMS.GetSerial()<=0):
-				raise osexception( "Failed to connect to device on port '%s'" % (self._vuams))
+				raise osexception( u'Failed to connect to device on port "%s"' % (self._vuams))
 
 		else:
 			# Else determine the common name of the serial devices on the
 			# platform and find the first accessible device. On Windows,
 			# devices are labeled COM[X], on Linux there are labeled /dev/tty[X]
-			if os.name == "nt":
+			debug.msg(u'Trying to connect to VU-AMS device using autodetect')
+			if os.name == u'nt':
 				for i in range(255):
 					try:
-						dev = "COM%d" % (i+1) #as COM ports start from 1 on Windows
-						self.AMS.Connect(str(dev), "AMS5fs")
+						dev = u'COM%d' % (i+1) #as COM ports start from 1 on Windows
+						self.AMS.Connect(str(dev), 'AMS5fs') #NOTE: device type can't be u'unicode'
 						# Try to get VU-AMS Serial to check is a VU-AMS device is connected
 						if(self.AMS.GetSerial()>0):
 							self._vuams = dev
@@ -95,29 +99,31 @@ class vu_ams(item):
 						self._vuams = None
 						pass
 
-			elif os.name == "posix":
+			elif os.name == u'posix':
 				raise osexception( \
-					"Sorry: the vu-ams plug-in is Windows only.")
+					u'Sorry: the vu-ams plug-in is Windows only.')
 			else:
 				raise osexception( \
-					"vu-ams plug-in does not know how to auto-detect the VU-AMS on your platform. Please specify a device.")
+					u'vu-ams plug-in does not know how to auto-detect the VU-AMS on your platform. Please specify a device.')
 
 		if self._vuams == None:
 			raise osexception( \
-				"vu-ams plug-in failed to auto-detect a VU-AMS. Please specify a device.")
+				u'vu-ams plug-in failed to auto-detect a VU-AMS. Please specify a device.')
+		else:
+			print u'Connected to VU-AMS'
 		
 		# Check if VU-AMS device is recording
 		if(self.AMS.IsRecording()!=1):
-			raise osexception("VU-AMS is not recording!")
+			raise osexception(u'VU-AMS is not recording!')
 		
 		# Check if marker is numerical
 		try:
-			int(self.get('_send_marker'))
+			int(self.get(u'_send_marker'))
 		except Exception as e:
-			raise osexception("Number")
+			raise osexception(u'Number')
 		# Check if marker is bigger then 65535
-		if(self.get('_send_marker')>65535):
-			raise osexception("Markers can not be bigger then 65535")
+		if(self.get(u'_send_marker')>65535):
+			raise osexception(u'Markers can not be bigger then 65535')
 	
 		self.experiment.cleanup_functions.append(self.close)
 
@@ -129,22 +135,23 @@ class vu_ams(item):
 		
 		# takes about 18 milliseconds for AMSi RS232 and 32ms for AMSi USB version
 		try:
-			self.AMS.SendCodedMarker(self.get('_send_marker'))
+			print u'Sending marker %s to VU-AMS' % (self.get(u'_send_marker'))
+			self.AMS.SendCodedMarker(self.get(u'_send_marker'))
 		except:
-			print '### Failed to send codedmarker!'
+			print u'### Failed to send codedmarker!'
 			
 	def close(self):
 
 		"""Neatly close the connection to the VU-AMS"""
 		
 		if self._vuams == None:
-				print "no active vuams"
+				print u'no active vuams'
 				return
 		try:
 			self.AMS.Disconnect()
-			print "vuams closed"
+			print u'Closed connection to VU-AMS'
 		except:
-			print "failed to close vuams"
+			print u'failed to close vuams'
 
 
 
