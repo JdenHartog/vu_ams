@@ -48,6 +48,7 @@ class vu_ams(item):
 		# set in the GUI.
 		self._device_name = u'autodetect'
 		self._send_marker = 1
+		self._use_title_checkbox = u'no' # yes = checked, no = unchecked
 		
 		self._vuams = None
 
@@ -145,6 +146,20 @@ class vu_ams(item):
 			#######################
 
 
+		# If "Use number from title" is enabled get number from item title
+		if(self._use_title_checkbox ==  u'yes'):
+			number = ''.join(x for x in self.name if x.isdigit())
+			try:
+				int(number)
+			except Exception as e:
+				raise osexception(u'Item "%s": No number in vu_ams item title "%s" to send as marker' % (self.name, self.name))
+			self.set((u'_send_marker'), number)
+		
+		# Check that title doesn't start with number.
+		# Technically this should be a problem but it's not advisable and might be evoked by "Use number from title" functionality.
+		if(self.name[0].isdigit()):
+			print u'It is not advisable to start an item title with a number. (Good: "vu_ams33", "vu2_ams" and "R2-D2" Bad: "33vu_ams")'
+	
 		# Check if marker is numerical
 		try:
 			int(self.get(u'_send_marker'))
@@ -233,7 +248,7 @@ class qtvu_ams(vu_ams, qtautoplugin):
 		# QLineEdit. Here we connect the stateChanged signal of the QCheckBox,
 		# to the setEnabled() slot of the QLineEdit. This has the effect of
 		# disabling the QLineEdit when the QCheckBox is uncheckhed.
-		#self.checkbox_widget.stateChanged.connect( \
-		#	self.line_edit_widget.setEnabled)
+		self.checkbox_widget.stateChanged.connect( \
+			self.line_edit_widget2.setDisabled)
 
 

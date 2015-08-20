@@ -15,8 +15,14 @@ controls:
     type: "line_edit"
     var: "_send_marker"
     label: "Send marker"
-    name: "spinbox_widget"
+    name: "line_edit_widget2"
     tooltip: "Value between 0 and 65535 to be send"
+-
+    type: "checkbox"
+    var: "_use_title_checkbox"
+    label: "Use number from title"
+    name: "checkbox_widget"
+    tooltip: "This will use the number(s) from the item title as the marker to be send"
 -
     type: "text"
     label: ""
@@ -28,4 +34,4 @@ controls:
     label: ""
 -
     type: "text"
-    label: "VU-AMS OpenSesame plug-in v1.1 by Jarik den Hartog"
+    label: "VU-AMS OpenSesame plug-in v1.2 by Jarik den Hartog"
