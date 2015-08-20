@@ -165,10 +165,15 @@ class vu_ams(item):
 		try:
 			print u'Sending marker %s to VU-AMS' % (self.get(u'_send_marker'))
 			self.AMS.SendCodedMarker(self.get(u'_send_marker'))
-			# set [self.name]_marker_sent_time so it can be stored using the logger item
-			self.experiment.set(u'%s_marker_sent_time' % self.name, str(self.time()))
 		except:
 			print u'### Failed to send codedmarker!'
+			
+		# set [self.name]_marker_sent_time so it can be stored using the logger item
+		try:
+			self.experiment.set(u'marker_sent_time_%s' % self.name, str(self.time()))
+		except:
+			print u'Item "%s": Error set [self.name]_marker_sent_time!' % self.name
+
 			
 	def close(self):
 
