@@ -149,10 +149,10 @@ class vu_ams(item):
 		try:
 			int(self.get(u'_send_marker'))
 		except Exception as e:
-			raise osexception(u'Number')
+			raise osexception(u'Item "%s": Markers must be a number' % self.name)
 		# Check if marker is bigger then 65535
 		if(self.get(u'_send_marker')>65535):
-			raise osexception(u'Markers can not be bigger then 65535')
+			raise osexception(u'Item "%s": Markers can not be bigger then 65535' % self.name)
 	
 		
 	def run(self):
@@ -163,10 +163,10 @@ class vu_ams(item):
 		
 		# takes about 18 milliseconds for AMSi RS232 and 32ms for AMSi USB version
 		try:
-			print u'Sending marker %s to VU-AMS' % (self.get(u'_send_marker'))
+			print u'Item "%s": Sending marker %s to VU-AMS' % (self.name, self.get(u'_send_marker'))
 			self.AMS.SendCodedMarker(self.get(u'_send_marker'))
 		except:
-			print u'### Failed to send codedmarker!'
+			print u'Item "%s": Failed to send codedmarker!' % self.name
 			
 		# set [self.name]_marker_sent_time so it can be stored using the logger item
 		try:
