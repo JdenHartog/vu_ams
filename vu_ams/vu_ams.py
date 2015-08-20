@@ -159,6 +159,8 @@ class vu_ams(item):
 
 		"""The run phase of the plug-in goes here."""
 		
+		self.set_item_onset(self.time())
+		
 		# takes about 18 milliseconds for AMSi RS232 and 32ms for AMSi USB version
 		try:
 			print u'Sending marker %s to VU-AMS' % (self.get(u'_send_marker'))
