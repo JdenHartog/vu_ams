@@ -17,11 +17,15 @@ You should have received a copy of the GNU General Public License
 along with OpenSesame.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from libopensesame import debug
+from libopensesame.exceptions import osexception
 from libopensesame.item import item
+
 from libqtopensesame.items.qtautoplugin import qtautoplugin
 
-from libopensesame.exceptions import osexception
-from libopensesame import debug
+from openexp.canvas import canvas
+from openexp.keyboard import keyboard
+
 import os
 
 
@@ -49,6 +53,7 @@ class vu_ams(item):
 		self._device_name = u'autodetect'
 		self._send_marker = 1
 		self._use_title_checkbox = u'no' # yes = checked, no = unchecked
+		self._use_without_vu_ams = u'no' # yes = checked, no = unchecked
 		
 		self._vuams = None
 
@@ -56,6 +61,33 @@ class vu_ams(item):
 
 		"""The preparation phase of the plug-in goes here."""
 
+		# Check if "Use without VU-AMS device" is checked. Then set vuamsconnected to 'debug' so all vu_ams actions and warnings are skipped
+		if(self._use_without_vu_ams ==  u'yes'):
+			self.experiment.set(u'vuamsconnected',u'debug')
+			# Show screen to warn user that no markers will be send to the VU-AMS device
+			my_canvas = canvas(self.experiment)
+			my_canvas.set_bgcolor(u'yellow')
+			my_canvas.set_fgcolor(u'red')
+			my_canvas.text(u'Warning: <b>no markers</b> will be sent to the VU-AMS device! \n\n <i>Hit "c" to Continue or "Esc" to quit</i>')
+			my_canvas.show()
+			my_keyboard = keyboard(self.experiment)
+			my_keyboard.get_key(keylist=[u'c', u'C'])
+			my_canvas.clear()
+			my_canvas.set_bgcolor(u'black')
+			my_canvas.text(u' ')
+			my_canvas.show()
+			print u'Item "%s": Debug mode: "Use without VU-AMS device" checked!' % self.name
+			return
+		
+		# Check if vuamsconnected is 'debug' so all vu_ams actions and warnings are skipped. This will work for all 
+		# vu_ams items that follow the vu_ams item where "Use without VU-AMS device" is checked
+		try: 
+			if(self.experiment.get(u'vuamsconnected') == u'debug'):
+				return
+		except:
+			pass
+
+		
 		# Call the parent constructor.
 		item.prepare(self)
 
@@ -117,7 +149,6 @@ class vu_ams(item):
 							self.AMS.Disconnect()
 						except Exception as e:
 							self._vuams = None
-							pass
 
 				elif os.name == u'posix':
 					raise osexception( \
@@ -173,6 +204,9 @@ class vu_ams(item):
 	def run(self):
 
 		"""The run phase of the plug-in goes here."""
+
+		if(self.experiment.get(u'vuamsconnected') == u'debug'):
+			return
 		
 		self.set_item_onset(self.time())
 		
@@ -245,10 +279,16 @@ class qtvu_ams(vu_ams, qtautoplugin):
 		# If you specify a 'name' for a control in info.json, this control will
 		# be available self.[name]. The type of the object depends on the
 		# control. A checkbox will be a QCheckBox, a line_edit will be a
-		# QLineEdit. Here we connect the stateChanged signal of the QCheckBox,
-		# to the setEnabled() slot of the QLineEdit. This has the effect of
-		# disabling the QLineEdit when the QCheckBox is uncheckhed.
+		# QLineEdit.
+		
+		# Connect "Send marker" line_edit to "Use number from title" checkbox:
 		self.checkbox_widget.stateChanged.connect( \
 			self.line_edit_widget2.setDisabled)
-
-
+		
+		# Connect all widgets to "Use without VU-AMS device" checkbox:
+		self.checkbox_widget2.stateChanged.connect( \
+			self.line_edit_widget.setDisabled)
+		self.checkbox_widget2.stateChanged.connect( \
+			self.line_edit_widget2.setDisabled)
+		self.checkbox_widget2.stateChanged.connect( \
+			self.checkbox_widget.setDisabled)

@@ -1,5 +1,5 @@
 description: VU-AMS plug-in.
-version: v1.2
+version: v1.3
 author: "Jarik den Hartog"
 url: "www.vu-ams.nl"
 category: "Miscellaneous"
@@ -24,6 +24,12 @@ controls:
     name: "checkbox_widget"
     tooltip: "This will use the number(s) from the item title as the marker to be send"
 -
+    type: "checkbox"
+    var: "_use_without_vu_ams"
+    label: "Use without VU-AMS device"
+    name: "checkbox_widget2"
+    tooltip: "This will allow you to try the experiment without a VU-AMS device"
+-
     type: "text"
     label: ""
 -
@@ -34,4 +40,4 @@ controls:
     label: ""
 -
     type: "text"
-    label: "VU-AMS OpenSesame plug-in v1.2 by Jarik den Hartog"
+    label: "VU-AMS OpenSesame plug-in v1.3 by Jarik den Hartog"
