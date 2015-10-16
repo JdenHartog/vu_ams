@@ -60,32 +60,26 @@ class vu_ams(item):
 	def prepare(self):
 
 		"""The preparation phase of the plug-in goes here."""
-
-		# Check if "Use without VU-AMS device" is checked. Then set vuamsconnected to 'debug' so all vu_ams actions and warnings are skipped
-		if(self._use_without_vu_ams ==  u'yes'):
-			self.experiment.set(u'vuamsconnected',u'debug')
-			# Show screen to warn user that no markers will be send to the VU-AMS device
-			my_canvas = canvas(self.experiment)
-			my_canvas.set_bgcolor(u'yellow')
-			my_canvas.set_fgcolor(u'red')
-			my_canvas.text(u'Warning: <b>no markers</b> will be sent to the VU-AMS device! \n\n <i>Hit "c" to Continue or "Esc" to quit</i>')
-			my_canvas.show()
-			my_keyboard = keyboard(self.experiment)
-			my_keyboard.get_key(keylist=[u'c', u'C'])
-			my_canvas.clear()
-			my_canvas.set_bgcolor(u'black')
-			my_canvas.text(u' ')
-			my_canvas.show()
-			print u'Item "%s": Debug mode: "Use without VU-AMS device" checked!' % self.name
-			return
 		
 		# Check if vuamsconnected is 'debug' so all vu_ams actions and warnings are skipped. This will work for all 
 		# vu_ams items that follow the vu_ams item where "Use without VU-AMS device" is checked
+		# NOTE: the behaviour might be a bit strange when vu_ams is used in a loop item: http://osdoc.cogsci.nl/usage/prepare-run/
 		try: 
 			if(self.experiment.get(u'vuamsconnected') == u'debug'):
 				return
+			# Check if "Use without VU-AMS device" is checked. Then set vuamsconnected to 'debug' so all vu_ams actions and warnings are skipped
+			elif(self._use_without_vu_ams ==  u'yes'):
+				self.experiment.set(u'vuamsconnected',u'debug')
+				self.warn()
+				print u'Item "%s": Debug mode: "Use without VU-AMS device" checked!' % self.name
+				return
 		except:
-			pass
+			# Check if "Use without VU-AMS device" is checked. Then set vuamsconnected to 'debug' so all vu_ams actions and warnings are skipped
+			if(self._use_without_vu_ams ==  u'yes'):
+				self.experiment.set(u'vuamsconnected',u'debug')
+				self.warn()
+				print u'Item "%s": Debug mode: "Use without VU-AMS device" checked!' % self.name
+				return
 
 		
 		# Call the parent constructor.
@@ -237,7 +231,28 @@ class vu_ams(item):
 		except:
 			print u'failed to close vuams'
 
+			
+	def warn(self):
 
+		"""Show screen to warn user that no markers will be send to the VU-AMS device"""
+		
+		my_canvas = canvas(self.experiment)
+		my_canvas.set_font(size=32)
+		my_canvas.set_bgcolor(u'yellow')
+		my_canvas.clear()
+		my_canvas.set_fgcolor(u'red')
+		my_canvas.text(u'Warning: <b>no markers</b> will be sent to the VU-AMS! \n\n <i>Hit "c" to Continue or "Esc" to quit</i>')
+		my_canvas.show()
+		my_keyboard = keyboard(self.experiment)
+		my_keyboard.get_key(keylist=[u'c', u'C'])
+		my_canvas.set_font(size=21)
+		my_canvas.set_bgcolor(u'black')
+		my_canvas.clear()
+		my_canvas.set_fgcolor(u'purple')
+		my_canvas.text(u'Preparing experiment...')
+		my_canvas.show()
+	
+	
 
 class qtvu_ams(vu_ams, qtautoplugin):
 	

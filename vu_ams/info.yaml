@@ -1,5 +1,5 @@
 description: VU-AMS plug-in.
-version: v1.3
+version: v1.4
 author: "Jarik den Hartog"
 url: "www.vu-ams.nl"
 category: "Miscellaneous"
@@ -40,4 +40,4 @@ controls:
     label: ""
 -
     type: "text"
-    label: "VU-AMS OpenSesame plug-in v1.3 by Jarik den Hartog"
+    label: "VU-AMS OpenSesame plug-in v1.4 by Jarik den Hartog"
