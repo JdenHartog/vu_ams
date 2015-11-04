@@ -1,6 +1,9 @@
 # vu_ams
 vu-ams plug-in for the [smathot/OpenSesame](https://github.com/smathot/OpenSesame) project
 
+# NOTE
+At this point in time the vu-ams plug-in only works with OpenSesame 2.9 (tested with version 2.9.7). OpenSesame 3.0 is not (yet) supported!
+
 # Install
 
 Copy the folder "vu_ams" to the OpenSesame plugins folder (for Windows 7 x64 normally "C:\Program Files (x86)\OpenSesame\plugins" ).
