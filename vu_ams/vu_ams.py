@@ -17,6 +17,8 @@ You should have received a copy of the GNU General Public License
 along with OpenSesame.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from libopensesame.py3compat import *
+
 from libopensesame import debug
 from libopensesame.exceptions import osexception
 from libopensesame.item import item
@@ -50,12 +52,12 @@ class vu_ams(item):
 		# in info.json. If you do not provide default values, the plug-in will
 		# work, but the variables will be undefined when they are not explicitly
 		# set in the GUI.
-		self._device_name = u'autodetect'
-		self._send_marker = 1
-		self._use_title_checkbox = u'no' # yes = checked, no = unchecked
-		self._use_without_vu_ams = u'no' # yes = checked, no = unchecked
+		self.var._device_name = u'autodetect'
+		self.var._send_marker = 1
+		self.var._use_title_checkbox = u'no' # yes = checked, no = unchecked
+		self.var._use_without_vu_ams = u'no' # yes = checked, no = unchecked
 		
-		self._vuams = None
+		self.var._vuams = None
 
 	def prepare(self):
 
@@ -68,14 +70,14 @@ class vu_ams(item):
 			if(self.experiment.get(u'vuamsconnected') == u'debug'):
 				return
 			# Check if "Use without VU-AMS device" is checked. Then set vuamsconnected to 'debug' so all vu_ams actions and warnings are skipped
-			elif(self._use_without_vu_ams ==  u'yes'):
+			elif(self.var._use_without_vu_ams ==  u'yes'):
 				self.experiment.set(u'vuamsconnected',u'debug')
 				self.warn()
 				print u'Item "%s": Debug mode: "Use without VU-AMS device" checked!' % self.name
 				return
 		except:
 			# Check if "Use without VU-AMS device" is checked. Then set vuamsconnected to 'debug' so all vu_ams actions and warnings are skipped
-			if(self._use_without_vu_ams ==  u'yes'):
+			if(self.var._use_without_vu_ams ==  u'yes'):
 				self.experiment.set(u'vuamsconnected',u'debug')
 				self.warn()
 				print u'Item "%s": Debug mode: "Use without VU-AMS device" checked!' % self.name
@@ -114,17 +116,17 @@ class vu_ams(item):
 			#######################
 			
 			# If a device has been specified, use it
-			if self._device_name not in (None, '', u'autodetect'):
-				self._vuams = self._device_name
+			if self.var._device_name not in (None, '', u'autodetect'):
+				self.var._vuams = self.var._device_name
 				try:
-					self.AMS.Connect(str(self._vuams), 'AMS5fs') #NOTE: device type can't be u'unicode'
+					self.AMS.Connect(str(self.var._vuams), 'AMS5fs') #NOTE: device type can't be u'unicode'
 					debug.msg(u'Trying to connect to VU-AMS device')
 				except Exception as e:
-					raise osexception( u'Failed to open device port "%s" : "%s"' % (self._vuams, e))
+					raise osexception( u'Failed to open device port "%s" : "%s"' % (self.var._vuams, e))
 
 				# Try to get VU-AMS Serial to check is a VU-AMS device is connected
 				if(self.AMS.GetSerial()<=0):
-					raise osexception( u'Failed to connect to device on port "%s"' % (self._vuams))
+					raise osexception( u'Failed to connect to device on port "%s"' % (self.var._vuams))
 
 			else:
 				# Else determine the common name of the serial devices on the
@@ -138,11 +140,11 @@ class vu_ams(item):
 							self.AMS.Connect(str(dev), 'AMS5fs') #NOTE: device type can't be u'unicode'
 							# Try to get VU-AMS Serial to check is a VU-AMS device is connected
 							if(self.AMS.GetSerial()>0):
-								self._vuams = dev
+								self.var._vuams = dev
 								break
 							self.AMS.Disconnect()
 						except Exception as e:
-							self._vuams = None
+							self.var._vuams = None
 
 				elif os.name == u'posix':
 					raise osexception( \
@@ -151,7 +153,7 @@ class vu_ams(item):
 					raise osexception( \
 						u'vu-ams plug-in does not know how to auto-detect the VU-AMS on your platform. Please specify a device.')
 
-			if self._vuams == None:
+			if self.var._vuams == None:
 				raise osexception( \
 					u'vu-ams plug-in failed to auto-detect a VU-AMS. Please specify a device.')
 			else:
@@ -172,7 +174,7 @@ class vu_ams(item):
 
 
 		# If "Use number from title" is enabled get number from item title
-		if(self._use_title_checkbox ==  u'yes'):
+		if(self.var._use_title_checkbox ==  u'yes'):
 			number = ''.join(x for x in self.name if x.isdigit())
 			try:
 				int(number)
@@ -222,7 +224,7 @@ class vu_ams(item):
 
 		"""Neatly close the connection to the VU-AMS"""
 		
-		if self._vuams == None:
+		if self.var._vuams == None:
 				print u'no active vuams'
 				return
 		try:
