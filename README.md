@@ -4,7 +4,7 @@ vu-ams plug-in for the [smathot/OpenSesame](https://github.com/smathot/OpenSesam
 # Install
 
 Copy the folder "vu_ams" to the OpenSesame plugins folder (for Windows 7 x64 normally "C:\Program Files (x86)\OpenSesame\plugins" ).
-Please see http://osdoc.cogsci.nl/plug-ins/installation for more information on OpenSesame and plug-ins.
+Please see http://osdoc.cogsci.nl/manual/environment for more information on OpenSesame and plug-ins.
 
 # About
 
