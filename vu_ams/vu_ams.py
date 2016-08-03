@@ -136,8 +136,8 @@ class vu_ams(item):
 				if os.name == u'nt':
 					for i in range(255):
 						try:
-							dev = u'COM%d' % (i+1) #as COM ports start from 1 on Windows
-							self.AMS.Connect(str(dev), 'AMS5fs') #NOTE: device type can't be u'unicode'
+							dev = 'COM%d' % (i+1) #as COM ports start from 1 on Windows
+							self.AMS.Connect(dev, 'AMS5fs') #NOTE: device type AND [dev] can't be u'unicode'
 							# Try to get VU-AMS Serial to check is a VU-AMS device is connected
 							if(self.AMS.GetSerial()>0):
 								self.var._vuams = dev
