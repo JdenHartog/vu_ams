@@ -57,7 +57,7 @@ class vu_ams(item):
 		self.var._use_title_checkbox = u'no' # yes = checked, no = unchecked
 		self.var._use_without_vu_ams = u'no' # yes = checked, no = unchecked
 		
-		self.var._vuams = None
+		self.var._vuams = 'None'
 
 	def prepare(self):
 
@@ -102,7 +102,7 @@ class vu_ams(item):
 		# Load dll to communicate with VU-AMS device
 		try:
 			from ctypes import windll
-			self.AMS = windll.amsserial # requires AmsSerial.dll !!!
+			self.var.AMS = windll.amsserial # requires AmsSerial.dll !!!
 			debug.msg(u'Loaded AmsSerial.dll')
 		except:
 			raise osexception( \
@@ -119,13 +119,13 @@ class vu_ams(item):
 			if self.var._device_name not in (None, '', u'autodetect'):
 				self.var._vuams = self.var._device_name
 				try:
-					self.AMS.Connect(str(self.var._vuams), 'AMS5fs') #NOTE: device type can't be u'unicode'
+					self.var.AMS.Connect(self.var._vuams.encode('utf-8'), 'AMS5fs') #NOTE: port AND device type can't be u'unicode'
 					debug.msg(u'Trying to connect to VU-AMS device')
 				except Exception as e:
 					raise osexception( u'Failed to open device port "%s" : "%s"' % (self.var._vuams, e))
 
 				# Try to get VU-AMS Serial to check is a VU-AMS device is connected
-				if(self.AMS.GetSerial()<=0):
+				if(self.var.AMS.GetSerial()<=0):
 					raise osexception( u'Failed to connect to device on port "%s"' % (self.var._vuams))
 
 			else:
@@ -137,14 +137,14 @@ class vu_ams(item):
 					for i in range(255):
 						try:
 							dev = 'COM%d' % (i+1) #as COM ports start from 1 on Windows
-							self.AMS.Connect(dev, 'AMS5fs') #NOTE: device type AND [dev] can't be u'unicode'
+							self.var.AMS.Connect(dev, 'AMS5fs') #NOTE: device type AND [dev] can't be u'unicode'
 							# Try to get VU-AMS Serial to check is a VU-AMS device is connected
-							if(self.AMS.GetSerial()>0):
+							if(self.var.AMS.GetSerial()>0):
 								self.var._vuams = dev
 								break
-							self.AMS.Disconnect()
+							self.var.AMS.Disconnect()
 						except Exception as e:
-							self.var._vuams = None
+							self.var._vuams = 'None'
 
 				elif os.name == u'posix':
 					raise osexception( \
@@ -153,16 +153,17 @@ class vu_ams(item):
 					raise osexception( \
 						u'vu-ams plug-in does not know how to auto-detect the VU-AMS on your platform. Please specify a device.')
 
-			if self.var._vuams == None:
+			if self.var._vuams == 'None':
 				raise osexception( \
 					u'vu-ams plug-in failed to auto-detect a VU-AMS. Please specify a device.')
 			else:
 				self.experiment.set(u'vuamsconnected',u'yes')
+				self.experiment.set(u'AMS', self.var.AMS)
 				print u'Connected to VU-AMS'
 		
 
 			# Check if VU-AMS device is recording
-			if(self.AMS.IsRecording()!=1):
+			if(self.var.AMS.IsRecording()!=1):
 				raise osexception(u'VU-AMS is not recording!')
 			
 			# Appending Close to cleanup_functions
@@ -209,7 +210,7 @@ class vu_ams(item):
 		# takes about 18 milliseconds for AMSi RS232 and 32ms for AMSi USB version
 		try:
 			print u'Item "%s": Sending marker %s to VU-AMS' % (self.name, self.get(u'_send_marker'))
-			self.AMS.SendCodedMarker(self.get(u'_send_marker'))
+			self.var.AMS.SendCodedMarker(self.get(u'_send_marker'))
 		except:
 			print u'Item "%s": Failed to send codedmarker!' % self.name
 			
@@ -224,11 +225,11 @@ class vu_ams(item):
 
 		"""Neatly close the connection to the VU-AMS"""
 		
-		if self.var._vuams == None:
+		if self.var._vuams == 'None':
 				print u'no active vuams'
 				return
 		try:
-			self.AMS.Disconnect()
+			self.var.AMS.Disconnect()
 			print u'Closed connection to VU-AMS'
 		except:
 			print u'failed to close vuams'
