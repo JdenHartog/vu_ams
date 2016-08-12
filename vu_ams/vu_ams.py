@@ -65,7 +65,7 @@ class vu_ams(item):
 		
 		# Check if vuamsconnected is 'debug' so all vu_ams actions and warnings are skipped. This will work for all 
 		# vu_ams items that follow the vu_ams item where "Use without VU-AMS device" is checked
-		# NOTE: the behaviour might be a bit strange when vu_ams is used in a loop item: http://osdoc.cogsci.nl/usage/prepare-run/
+		# NOTE: the behaviour might be a bit strange when vu_ams is used in a loop item: http://osdoc.cogsci.nl/3.1/manual/prepare-run/
 		try: 
 			if(self.experiment.get(u'vuamsconnected') == u'debug'):
 				return
