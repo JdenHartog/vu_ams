@@ -8,7 +8,7 @@ Please see http://osdoc.cogsci.nl/manual/environment for more information on Ope
 
 # About
 
-The vu_ams plug-in sends event markers from OpenSesame to the VU-AMS device (www.vu-ams.nl) to mark events in the VU-AMS data. These events can be used for analyzing the VU-AMS data. For example by automatically creating labels based upon the event markers send by OpenSesame.
+The vu_ams plug-in sends event markers from OpenSesame to the VU-AMS device (www.vu-ams.nl) to mark events in the VU-AMS data. These events can be used for analyzing the VU-AMS data. For example by automatically creating labels based on the event markers send by OpenSesame.
 
 # Dependencies
 
