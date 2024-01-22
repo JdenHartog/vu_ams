@@ -1,3 +1,5 @@
+> For a 64-bit (code only) alternative one could look at https://github.com/solo-fsw/vuams-markers
+
 # vu_ams
 vu-ams plug-in for the [smathot/OpenSesame](https://github.com/smathot/OpenSesame) project
 
